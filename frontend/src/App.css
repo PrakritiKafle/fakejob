@@ -1,0 +1,60 @@
+:root {
+  --nm-bg: #e0e5ec;
+  --nm-shadow-dark: #a3b1c6;
+  --nm-shadow-light: #ffffff;
+  --nm-text: #44475a;
+  --primary-blue: #3498db;
+}
+
+body {
+  background-color: var(--nm-bg);
+  color: var(--nm-text);
+  font-family: 'Poppins', sans-serif;
+}
+
+/* The Main Neumorphic Card */
+.nm-card {
+  background: var(--nm-bg);
+  border-radius: 30px;
+  box-shadow: 9px 9px 16px var(--nm-shadow-dark), 
+              -9px -9px 16px var(--nm-shadow-light);
+  padding: 50px;
+  border: none;
+}
+
+/* Neumorphic Input Fields */
+.nm-input {
+  background: var(--nm-bg);
+  border: none;
+  border-radius: 10px;
+  box-shadow: inset 5px 5px 10px var(--nm-shadow-dark), 
+              inset -5px -5px 10px var(--nm-shadow-light);
+  padding: 15px 20px;
+  color: var(--nm-text);
+  transition: all 0.3s ease;
+}
+
+.nm-input:focus {
+  outline: none;
+  box-shadow: inset 2px 2px 5px var(--nm-shadow-dark), 
+              inset -2px -2px 5px var(--nm-shadow-light);
+  background: var(--nm-bg);
+}
+
+/* Neumorphic Button */
+.nm-btn {
+  border-radius: 10px;
+  background: var(--nm-bg);
+  border: none;
+  box-shadow: 5px 5px 10px var(--nm-shadow-dark), 
+              -5px -5px 10px var(--nm-shadow-light);
+  color: var(--primary-blue);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.nm-btn:active {
+  box-shadow: inset 5px 5px 10px var(--nm-shadow-dark), 
+              inset -5px -5px 10px var(--nm-shadow-light);
+  transform: scale(0.98);
+}
