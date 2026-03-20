@@ -208,7 +208,7 @@ const Login = () => {
         <div className="form-panel">
           <div className="mb-4" style={{ marginBottom: '40px' }}>
             <h1 style={{ fontSize: '2.8rem', fontWeight: 900, color: '#fff', letterSpacing: '-1.5px', margin: 0 }}>
-              Welcome Back
+              Welcome 
             </h1>
             <p style={{ color: '#94a3b8', fontWeight: 600, marginTop: '5px' }}>
               Please sign in to continue

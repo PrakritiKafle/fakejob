@@ -24,7 +24,10 @@ const Dashboard = () => {
   }, []);
 
   const handleAnalyze = async () => {
-    if (!jobText || jobText.length < 20) return alert("Please provide more text for the scan.");
+    // CHANGE 1: Block anything under 300 characters before sending to backend
+    if (!jobText || jobText.length < 300) {
+      return alert(`⚠️ Invalid job post — Please provide at least 300 characters.\n\nCurrent length: ${jobText.length} characters.\n\nInclude title, responsibilities, requirements and salary for accurate detection.`);
+    }
     
     setIsAnalyzing(true);
     setShowResults(false);
@@ -36,7 +39,15 @@ const Dashboard = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ description: jobText, email: user.email }),
       });
+
       const data = await response.json();
+
+      // CHANGE 2: Handle error responses from backend (400, 503 etc.)
+      if (!response.ok) {
+        alert("⚠️ " + (data.detail || "Analysis failed. Please try again."));
+        setIsAnalyzing(false);
+        return;
+      }
       
       setTimeout(() => setAnalysisPhase('NEURAL FILTERING...'), 800);
       setTimeout(() => setAnalysisPhase('COMPILING RESULTS...'), 1600);
@@ -141,6 +152,11 @@ const Dashboard = () => {
         
         .pulse-bulb { width: 10px; height: 10px; border-radius: 50%; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(0.9); opacity: 0.6; } 50% { transform: scale(1.1); opacity: 1; } }
+
+        .char-counter {
+          font-size: 0.7rem; font-weight: 700; margin-top: 8px;
+          text-align: right; transition: color 0.3s;
+        }
       `}</style>
 
       <div className="main-layout">
@@ -174,15 +190,15 @@ const Dashboard = () => {
   </div>
 
   <div className="user-highlight">
-    <div style={{ fontSize: '0.6rem', color: '#58a6ff', fontWeight: 800 }}>AGENT STATUS: ACTIVE</div>
+    <div style={{ fontSize: '0.6rem', color: '#58a6ff', fontWeight: 800 }}></div>
     <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>{user.name}</div>
-    <button onClick={() => navigate('/')} className="logout-btn"><LogOut size={16} /> Exit System</button>
+    <button onClick={() => navigate('/')} className="logout-btn"><LogOut size={16} /> Logout</button>
   </div>
 </aside>
 
         <main>
           <header style={{ marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '2.5rem', margin: 0, fontWeight: 800 }}>Fake Job And Internship Detection</h2>
+            <h2 style={{ fontSize: '2.5rem', margin: 0, fontWeight: 800 }}>Fake Job And Internship Advertisement Detection</h2>
             <p style={{ color: '#8b949e' }}>HYBRID MODEL</p>
           </header>
 
@@ -195,10 +211,21 @@ const Dashboard = () => {
               </div>
               <textarea 
                 className="input-area" 
-                placeholder="Paste job description here to begin scan..." 
+                placeholder="Paste job description here to begin scan... (minimum 300 characters)" 
                 value={jobText} 
                 onChange={(e) => setJobText(e.target.value)} 
               />
+
+              {/* Character counter — shows live count, turns green at 300+ */}
+              <div
+                className="char-counter"
+                style={{
+                  color: jobText.length >= 300 ? '#10b981' : jobText.length >= 150 ? '#f1e05a' : '#f85149'
+                }}
+              >
+                {jobText.length} / 300 characters {jobText.length >= 300 ? '✓ Ready to scan' : `(${300 - jobText.length} more needed)`}
+              </div>
+
               <button 
                 className="logout-btn" 
                 style={{ background: '#10b981', padding: '1.2rem', marginTop: '1.5rem', fontSize: '1.1rem' }} 
