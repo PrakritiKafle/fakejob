@@ -1,85 +1,78 @@
 {
   "prakritikafle16@gmail.com": {
-    "name": "pk",
-    "password": "11111",
-    "created_at": "2026-03-01T15:16:24.021790",
+    "full_name": "",
+    "password": "111111",
     "history": [
       {
-        "id": 1773985975.268438,
-        "timestamp": "Mar 20, 11:37",
-        "description": "\ud835\udc16\ud835\udc1e\u2019\ud835\udc2b\ud835\udc1e \ud835\udc07\ud835\udc22\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc20: \ud835\uddd9\ud835\uddff\ud835\uddfc\ud835\uddfb\ud835\ude01 \ud835\uddd7\ud835\uddf2\ud835\ude00\ud835\uddf8 \ud835\udddc\ud835\uddfb\ud835\ude01\ud835\uddf2\ud835\uddff\ud835\uddfb\n\ud835\udc04\ud835\udc31\ud835\udc29\ud835\udc1e\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc27\ud835\udc1c\ud835\udc1e: 0 months of hands-on experience in front desk, reception, or administrative ...",
-        "result": "GENUINE",
-        "confidence": "72.64%"
-      },
-      {
-        "id": 1773985940.377302,
-        "timestamp": "Mar 20, 11:37",
-        "description": "\ud835\udc16\ud835\udc1e\u2019\ud835\udc2b\ud835\udc1e \ud835\udc07\ud835\udc22\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc20: \ud835\uddd9\ud835\uddff\ud835\uddfc\ud835\uddfb\ud835\ude01 \ud835\uddd7\ud835\uddf2\ud835\ude00\ud835\uddf8 \ud835\udddc\ud835\uddfb\ud835\ude01\ud835\uddf2\ud835\uddff\ud835\uddfb\n\ud835\udc04\ud835\udc31\ud835\udc29\ud835\udc1e\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc27\ud835\udc1c\ud835\udc1e: 0 months of hands-on experience in front desk, reception, or administrative ...",
-        "result": "GENUINE",
-        "confidence": "77.52%"
-      },
-      {
-        "id": 1773985909.708282,
-        "timestamp": "Mar 20, 11:36",
-        "description": "\ud835\udc16\ud835\udc1e\u2019\ud835\udc2b\ud835\udc1e \ud835\udc07\ud835\udc22\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc20: \ud835\uddd9\ud835\uddff\ud835\uddfc\ud835\uddfb\ud835\ude01 \ud835\uddd7\ud835\uddf2\ud835\ude00\ud835\uddf8 \ud835\udddc\ud835\uddfb\ud835\ude01\ud835\uddf2\ud835\uddff\ud835\uddfb\n\ud835\udc04\ud835\udc31\ud835\udc29\ud835\udc1e\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc27\ud835\udc1c\ud835\udc1e: 600000000 months of hands-on experience in front desk, reception, or adminis...",
-        "result": "FAKE",
-        "confidence": "98.0%"
-      },
-      {
-        "id": 1773985872.117594,
-        "timestamp": "Mar 20, 11:36",
-        "description": "\ud835\udc16\ud835\udc1e\u2019\ud835\udc2b\ud835\udc1e \ud835\udc07\ud835\udc22\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc20: \ud835\uddd9\ud835\uddff\ud835\uddfc\ud835\uddfb\ud835\ude01 \ud835\uddd7\ud835\uddf2\ud835\ude00\ud835\uddf8 \ud835\udddc\ud835\uddfb\ud835\ude01\ud835\uddf2\ud835\uddff\ud835\uddfb\n\ud835\udc04\ud835\udc31\ud835\udc29\ud835\udc1e\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc27\ud835\udc1c\ud835\udc1e: 6 months of hands-on experience in front desk, reception, or administrative ...",
-        "result": "FAKE",
-        "confidence": "98.0%"
-      },
-      {
-        "id": 1773985836.415163,
-        "timestamp": "Mar 20, 11:35",
-        "description": "\ud835\udc16\ud835\udc1e\u2019\ud835\udc2b\ud835\udc1e \ud835\udc07\ud835\udc22\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc20: \ud835\uddd9\ud835\uddff\ud835\uddfc\ud835\uddfb\ud835\ude01 \ud835\uddd7\ud835\uddf2\ud835\ude00\ud835\uddf8 \ud835\udddc\ud835\uddfb\ud835\ude01\ud835\uddf2\ud835\uddff\ud835\uddfb\n\ud835\udc04\ud835\udc31\ud835\udc29\ud835\udc1e\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc27\ud835\udc1c\ud835\udc1e: 6 months of hands-on experience in front desk, reception, or administrative ...",
-        "result": "FAKE",
-        "confidence": "98.0%"
-      },
-      {
-        "id": 1773985773.636655,
-        "timestamp": "Mar 20, 11:34",
-        "description": "\ud835\udc16\ud835\udc1e\u2019\ud835\udc2b\ud835\udc1e \ud835\udc07\ud835\udc22\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc20: \ud835\uddd9\ud835\uddff\ud835\uddfc\ud835\uddfb\ud835\ude01 \ud835\uddd7\ud835\uddf2\ud835\ude00\ud835\uddf8 \ud835\udddc\ud835\uddfb\ud835\ude01\ud835\uddf2\ud835\uddff\ud835\uddfb\n\ud835\udc04\ud835\udc31\ud835\udc29\ud835\udc1e\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc27\ud835\udc1c\ud835\udc1e: 6 months of hands-on experience in front desk, reception, or administrative ...",
-        "result": "GENUINE",
-        "confidence": "77.72%"
-      },
-      {
-        "id": 1773985601.492922,
-        "timestamp": "Mar 20, 11:31",
-        "description": "Title:Mental health nurse\nDescription:Arm drive court sure vote. Earn $5000/week! Immediate hiring. Contact now at david...",
-        "result": "FAKE",
-        "confidence": "95.87%"
-      },
-      {
-        "id": 1773985368.962518,
-        "timestamp": "Mar 20, 11:27",
-        "description": "Work From Home Data Entry Job\n\nWe are hiring urgently for a data entry position. No experience required. Freshers are we...",
-        "result": "FAKE",
-        "confidence": "98.0%"
-      },
-      {
-        "id": 1773981827.179052,
-        "timestamp": "Mar 20, 10:28",
+        "id": 1774091274.434113,
+        "timestamp": "Mar 21, 16:52",
         "description": "\ud835\udc16\ud835\udc1e\u2019\ud835\udc2b\ud835\udc1e \ud835\udc07\ud835\udc22\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc20: \ud835\uddd6\ud835\uddfc\ud835\uddfb\ud835\ude01\ud835\uddf2\ud835\uddfb\ud835\ude01 \ud835\uddd6\ud835\uddff\ud835\uddf2\ud835\uddee\ud835\ude01\ud835\uddfc\ud835\uddff\n\ud835\udc04\ud835\udc31\ud835\udc29\ud835\udc1e\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc27\ud835\udc1c\ud835\udc1e: Prior experience in content creation (Freshers can apply)\n\ud835\udde6\ud835\uddee\ud835\uddf9\ud835\uddee\ud835\uddff\ud835\ude06: Negotiable\n\ud835\udc04...",
         "result": "GENUINE",
-        "confidence": "99.36%"
+        "confidence": "99.43%"
       },
       {
-        "id": 1773981815.25057,
-        "timestamp": "Mar 20, 10:28",
-        "description": "\ud835\udc16\ud835\udc1e\u2019\ud835\udc2b\ud835\udc1e \ud835\udc07\ud835\udc22\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc20: \ud835\uddd6\ud835\uddfc\ud835\uddfb\ud835\ude01\ud835\uddf2\ud835\uddfb\ud835\ude01 \ud835\uddd6\ud835\uddff\ud835\uddf2\ud835\uddee\ud835\ude01\ud835\uddfc\ud835\uddff\n\ud835\udc04\ud835\udc31\ud835\udc29\ud835\udc1e\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc27\ud835\udc1c\ud835\udc1e: Prior experience in content creation (Freshers can apply)\n\ud835\udde6\ud835\uddee\ud835\uddf9\ud835\uddee\ud835\uddff\ud835\ude06: Negotiable\n\ud835\udc04...",
+        "id": 1774091263.682879,
+        "timestamp": "Mar 21, 16:52",
+        "description": "Job Title: Work From Home Data Entry Clerk (Earn $500 Daily!!!)\n\nCompany: Global Online Solutions Ltd. (Newly Launched)\n...",
         "result": "FAKE",
-        "confidence": "98.0%"
+        "confidence": "64.54%"
+      },
+      {
+        "id": 1774091257.177188,
+        "timestamp": "Mar 21, 16:52",
+        "description": "\ud835\udc16\ud835\udc1e\u2019\ud835\udc2b\ud835\udc1e \ud835\udc07\ud835\udc22\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc20: \ud835\uddd6\ud835\uddfc\ud835\uddfb\ud835\ude01\ud835\uddf2\ud835\uddfb\ud835\ude01 \ud835\uddd6\ud835\uddff\ud835\uddf2\ud835\uddee\ud835\ude01\ud835\uddfc\ud835\uddff\n\ud835\udc04\ud835\udc31\ud835\udc29\ud835\udc1e\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc27\ud835\udc1c\ud835\udc1e: Prior experience in content creation (Freshers can apply)\n\ud835\udde6\ud835\uddee\ud835\uddf9\ud835\uddee\ud835\uddff\ud835\ude06: Negotiable\n\ud835\udc04...",
+        "result": "GENUINE",
+        "confidence": "99.43%"
+      },
+      {
+        "id": 1774091196.054384,
+        "timestamp": "Mar 21, 16:51",
+        "description": "Job Title: Work From Home Data Entry Clerk (Earn $500 Daily!!!)\n\nCompany: Global Online Solutions Ltd. (Newly Launched)\n...",
+        "result": "FAKE",
+        "confidence": "64.54%"
+      },
+      {
+        "id": 1774086738.001889,
+        "timestamp": "Mar 21, 15:37",
+        "description": "Job Title: Work From Home Data Entry Clerk (Earn $500 Daily!!!)\n\nCompany: Global Online Solutions Ltd. (Newly Launched)\n...",
+        "result": "FAKE",
+        "confidence": "72.99%"
+      },
+      {
+        "id": 1774086697.531473,
+        "timestamp": "Mar 21, 15:36",
+        "description": "\ud835\udc16\ud835\udc1e\u2019\ud835\udc2b\ud835\udc1e \ud835\udc07\ud835\udc22\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc20: \ud835\udddb\ud835\udde5 \ud835\udddc\ud835\uddfb\ud835\ude01\ud835\uddf2\ud835\uddff\ud835\uddfb\n\ud835\udc04\ud835\udc31\ud835\udc29\ud835\udc1e\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc27\ud835\udc1c\ud835\udc1e: Freshers can apply\n\ud835\udde6\ud835\uddee\ud835\uddf9\ud835\uddee\ud835\uddff\ud835\ude06: NPR 400 Per/Day\n\ud835\udc04\ud835\udc1d\ud835\udc2e\ud835\udc1c\ud835\udc1a\ud835\udc2d\ud835\udc22\ud835\udc28\ud835\udc27: Bachelor\u2019s degree (running or ...",
+        "result": "GENUINE",
+        "confidence": "82.76%"
+      },
+      {
+        "id": 1774083503.233267,
+        "timestamp": "Mar 21, 14:43",
+        "description": "\ud835\udc16\ud835\udc1e\u2019\ud835\udc2b\ud835\udc1e \ud835\udc07\ud835\udc22\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc20: \ud835\udde6\ud835\uddee\ud835\uddf9\ud835\uddf2\ud835\ude00 \ud835\uddd8\ud835\ude05\ud835\uddf2\ud835\uddf0\ud835\ude02\ud835\ude01\ud835\uddf6\ud835\ude03\ud835\uddf2\n\ud835\udc04\ud835\udc31\ud835\udc29\ud835\udc1e\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc27\ud835\udc1c\ud835\udc1e: 6 months clothing store experience (Freshers welcome). Excellent English commu...",
+        "result": "GENUINE",
+        "confidence": "95.97%"
+      },
+      {
+        "id": 1774083495.666672,
+        "timestamp": "Mar 21, 14:43",
+        "description": "\ud835\udc16\ud835\udc1e\u2019\ud835\udc2b\ud835\udc1e \ud835\udc07\ud835\udc22\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc20: \ud835\udde6\ud835\uddee\ud835\uddf9\ud835\uddf2\ud835\ude00 \ud835\uddd8\ud835\ude05\ud835\uddf2\ud835\uddf0\ud835\ude02\ud835\ude01\ud835\uddf6\ud835\ude03\ud835\uddf2\n\ud835\udc04\ud835\udc31\ud835\udc29\ud835\udc1e\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc27\ud835\udc1c\ud835\udc1e: 6 months clothing store experience (Freshers welcome). Excellent English commu...",
+        "result": "GENUINE",
+        "confidence": "95.97%"
+      },
+      {
+        "id": 1774082780.430083,
+        "timestamp": "Mar 21, 14:31",
+        "description": "ob Title: Work From Home Data Entry Clerk (Earn $500 Daily!!!)\n\nCompany: Global Online Solutions Ltd. (Newly Launched)\n\n...",
+        "result": "FAKE",
+        "confidence": "74.69%"
+      },
+      {
+        "id": 1774081954.454561,
+        "timestamp": "Mar 21, 14:17",
+        "description": "\ud835\udc16\ud835\udc1e\u2019\ud835\udc2b\ud835\udc1e \ud835\udc07\ud835\udc22\ud835\udc2b\ud835\udc22\ud835\udc27\ud835\udc20: \ud835\udde6\ud835\uddee\ud835\uddf9\ud835\uddf2\ud835\ude00 \ud835\uddd8\ud835\ude05\ud835\uddf2\ud835\uddf0\ud835\ude02\ud835\ude01\ud835\uddf6\ud835\ude03\ud835\uddf2\n\ud835\udc04\ud835\udc31\ud835\udc29\ud835\udc1e\ud835\udc2b\ud835\udc22\ud835\udc1e\ud835\udc27\ud835\udc1c\ud835\udc1e: 6 months clothing store experience (Freshers welcome). Excellent English commu...",
+        "result": "GENUINE",
+        "confidence": "95.97%"
       }
     ]
-  },
-  "test@gmail.com": {
-    "name": "test",
-    "password": "pass123",
-    "history": [],
-    "created_at": "2026-03-03T13:58:46.207809"
   }
 }

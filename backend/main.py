@@ -13,12 +13,9 @@ from nltk.stem import WordNetLemmatizer
 import uvicorn
 
 # --- INITIALIZATION ---
-# [cite: 111] Using FastAPI for API creation as specified in requirements.
 app = FastAPI(title="JobGuard Pro: Hybrid ML + Heuristic Engine")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# [cite: 113, 492] While the report mentions SQLite, your current logic uses JSON for simplicity.
-# To match the report's ER-diagram, you may later migrate this to a .db file.
 DB_FILE  = os.path.join(BASE_DIR, "users.json")
 MODELS_PATH = os.path.join(BASE_DIR, "model")
 
@@ -51,10 +48,9 @@ app.add_middleware(
 )
 
 # --- NLTK & PREPROCESSING ---
-# [cite: 137, 138, 139] Preprocessing: removing noise, stopwords, and applying lemmatization.
 def setup_nltk():
-    global stop_words, lemmatizer
-    for pkg in ['stopwords', 'wordnet']:
+    global stop_words, lemmatizer, english_vocab
+    for pkg in ['stopwords', 'wordnet', 'words']:
         try:
             nltk.download(pkg, quiet=True)
         except Exception as e:
@@ -62,22 +58,44 @@ def setup_nltk():
     
     stop_words = set(stopwords.words('english'))
     lemmatizer = WordNetLemmatizer()
+    # Loading English vocabulary for gibberish detection
+    try:
+        english_vocab = set(w.lower() for w in nltk.corpus.words.words())
+    except:
+        # Fallback if words corpus isn't available
+        english_vocab = set()
 
 setup_nltk()
 
 def clean_text(raw_text):
-    # [cite: 138] Standardizing by removing non-alphabetic characters and lowercasing.
     text = re.sub(r'[^a-zA-Z0-9]', ' ', str(raw_text))
     text = text.lower().split()
     text = [lemmatizer.lemmatize(word) for word in text if word not in stop_words]
     return " ".join(text)
 
-# --- HEURISTIC LOGIC (Safety Layer) ---
-# [cite: 205, 206] Fixed logical rules to check for "economic impossibilities" like high salaries.
+# --- VALIDATION LOGIC (Gibberish Check) ---
+def is_valid_input(raw_text):
+    """Checks if the input is meaningful and long enough."""
+    words = re.findall(r'\b\w+\b', raw_text.lower())
+    
+    # 1. Minimum Word Count
+    if len(words) < 10:
+        return False, "Input is too short to be a job advertisement."
+
+    # 2. English Dictionary Check (Gibberish Detection)
+    # Checks if words exist in the NLTK dictionary
+    meaningful_count = sum(1 for w in words if w in english_vocab or w.isdigit())
+    validity_ratio = meaningful_count / len(words) if len(words) > 0 else 0
+    
+    # Threshold: If < 35% of words are recognized, it's gibberish
+    if validity_ratio < 0.35:
+        return False, "This is gibberish. Cannot find such words in our database."
+
+    return True, "Success"
+
+# --- HEURISTIC LOGIC ---
 def check_heuristics(raw_text):
     text_lower = raw_text.lower()
-    
-    # Detect suspiciously high salary patterns (e.g., > 150,000)
     numbers = re.findall(r'\d+(?:,\d+)*', text_lower)
     for n in numbers:
         try:
@@ -86,15 +104,11 @@ def check_heuristics(raw_text):
                 return 0.98
         except ValueError:
             continue
-            
-    # Pattern: High-level roles requiring no experience
     if "ceo" in text_lower and ("no experience" in text_lower or "freshers" in text_lower):
         return 0.99
-        
     return None
 
 # --- MODEL LOADING ---
-# [cite: 11, 155] Loading the Hybrid Ensemble: SVM, Naive Bayes, and Logistic Regression.
 models_loaded = False
 tfidf = svm_model = nb_model = lr_model = None
 
@@ -107,11 +121,10 @@ try:
         nb_model = pickle.load(f)
     with open(os.path.join(MODELS_PATH, "logistic_regression_model.pkl"), 'rb') as f:
         lr_model = pickle.load(f)
-    
     models_loaded = True
-    print("✅ HYBRID SYSTEM ONLINE: Ensemble + Heuristics Active.")
+    print("✅ HYBRID SYSTEM ONLINE: ML + Gibberish Shield Active.")
 except Exception as e:
-    print(f"❌ LOAD ERROR: Check if your .pkl files exist in /model/ directory. Error: {e}")
+    print(f"❌ LOAD ERROR: {e}")
 
 # --- SCHEMAS ---
 class JobInput(BaseModel):
@@ -124,32 +137,22 @@ class UserAuth(BaseModel):
     full_name: str = ""
 
 # --- API ENDPOINTS ---
-
-# [cite: 452, 486] Endpoint for User Registration.
 @app.post("/signup")
 async def signup(user: UserAuth):
     users = get_all_users()
     email_key = user.email.lower().strip()
     if email_key in users:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
-    users[email_key] = {
-        "full_name": user.full_name,
-        "password": user.password,
-        "history": []
-    }
+    users[email_key] = {"full_name": user.full_name, "password": user.password, "history": []}
     save_users(users)
     return {"message": "User created successfully", "full_name": user.full_name}
 
-# [cite: 452, 486] Endpoint for User Login with security check.
 @app.post("/login")
 async def login(user: UserAuth):
     users = get_all_users()
     email_key = user.email.lower().strip()
-    
     if email_key not in users or users[email_key].get("password") != user.password:
         raise HTTPException(status_code=401, detail="Invalid email or password")
-    
     return {
         "message": "Login successful",
         "full_name": users[email_key].get("full_name", "User"),
@@ -157,41 +160,54 @@ async def login(user: UserAuth):
         "history": users[email_key].get("history", [])
     }
 
-# [cite: 487, 488] Main Analysis Engine.
 @app.post("/analyze")
 async def analyze_job(data: JobInput):
     if not models_loaded:
         raise HTTPException(status_code=503, detail="AI Engine Offline")
 
     raw_text = data.description.strip()
+
+    # --- STEP 1: GIBBERISH & VALIDITY SHIELD ---
+    is_valid, message = is_valid_input(raw_text)
+    if not is_valid:
+        return {
+            "final_decision": "INVALID",
+            "result_label": "INVALID",
+            "confidence": 0,
+            "confidence_color": "#6c757d", # Gray
+            "battle_data": {
+                "SVM (Kernel)": 0,
+                "Naive Bayes": 0,
+                "Logistic Regression": 0,
+                "Status": message  # Returns "This is gibberish..."
+            },
+            "history": get_all_users().get(data.email.lower().strip(), {}).get("history", [])
+        }
     
-    # STEP 1: ML Analysis (Ensemble Averaging) 
+    # --- STEP 2: ML ANALYSIS ---
     cleaned = clean_text(raw_text)
     X_vec = tfidf.transform([cleaned])
-
     p_svm = float(svm_model.predict_proba(X_vec)[0][1])
     p_nb  = float(nb_model.predict_proba(X_vec)[0][1])
     p_lr  = float(lr_model.predict_proba(X_vec)[0][1])
-
     ai_prob = (p_svm + p_nb + p_lr) / 3
 
-    # STEP 2: Heuristic Check [cite: 205]
+    # --- STEP 3: HEURISTIC CHECK ---
     h_score = check_heuristics(raw_text)
 
-    # STEP 3: Combine using Maximum Fusion 
+    # --- STEP 4: FUSION ---
     final_fake_prob = max(ai_prob, h_score) if h_score else ai_prob
 
-    # STEP 4: Directional Confidence Logic [cite: 203, 210]
     if final_fake_prob >= 0.50:
         result_label = "FAKE"
         confidence = round(final_fake_prob * 100, 2)
-        conf_color = "#dc3545" # Red for FAKE 
+        conf_color = "#dc3545" 
     else:
         result_label = "GENUINE"
         confidence = round((1 - final_fake_prob) * 100, 2)
-        conf_color = "#198754" # Green for GENUINE 
+        conf_color = "#198754" 
 
-    # STEP 5: History Logging [cite: 452, 497]
+    # --- STEP 5: HISTORY LOGGING ---
     users = get_all_users()
     email_key = data.email.lower().strip()
     history_entry = {
@@ -218,7 +234,7 @@ async def analyze_job(data: JobInput):
             "SVM (Kernel)": round(p_svm * 100, 1),
             "Naive Bayes": round(p_nb * 100, 1),
             "Logistic Regression": round(p_lr * 100, 1),
-            "Heuristic Layer": "FLAGGED" if h_score else "PASSED"
+            "Status": "VALIDATED"
         },
         "history": users.get(email_key, {}).get("history", [])
     }
