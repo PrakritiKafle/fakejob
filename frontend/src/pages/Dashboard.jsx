@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ShieldCheck, History, LogOut, Activity, Zap, Clock, Cpu, Search, Sun, Moon 
+import {
+  ShieldCheck, History, LogOut, Activity, Zap, Clock, Cpu, Search, Sun, Moon,
+  Server, Database, FileText, CheckCircle, XCircle, AlertTriangle, ShieldAlert
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -13,7 +14,7 @@ const Dashboard = () => {
   const [showResults, setShowResults] = useState(false);
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState([]);
-  
+
   // Theme State
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
 
@@ -35,11 +36,11 @@ const Dashboard = () => {
     if (!jobText) {
       return alert("⚠️ Please provide job description text.");
     }
-    
+
     setIsAnalyzing(true);
     setShowResults(false);
     setAnalysisPhase('INITIALIZING SCAN...');
-    
+
     try {
       const response = await fetch("http://127.0.0.1:8000/analyze", {
         method: "POST",
@@ -54,10 +55,10 @@ const Dashboard = () => {
         setIsAnalyzing(false);
         return;
       }
-      
+
       setTimeout(() => setAnalysisPhase('NEURAL FILTERING...'), 200);
       setTimeout(() => setAnalysisPhase('COMPILING RESULTS...'), 1000);
-      
+
       setTimeout(() => {
         setResult(data);
         setIsAnalyzing(false);
@@ -91,13 +92,13 @@ const Dashboard = () => {
         }
 
         .light-theme {
-          --bg-root: #f4f7fa;
+          --bg-root: #f0f7ff;
           --bg-card: #ffffff;
-          --text-main: #1a1d21;
-          --text-muted: #626d79;
-          --border-color: #d0d7de;
-          --input-bg: #f8f9fa;
-          --card-shadow: 0 10px 30px rgba(0,0,0,0.05);
+          --text-main: #0f172a;
+          --text-muted: #64748b;
+          --border-color: #e2e8f0;
+          --input-bg: #f8fafc;
+          --card-shadow: 0 10px 30px rgba(56, 189, 248, 0.05);
         }
 
         .dashboard-root { 
@@ -111,24 +112,21 @@ const Dashboard = () => {
         .sidebar { 
           background: var(--bg-card); border: 1px solid var(--border-color); 
           border-radius: 24px; padding: 2rem; height: calc(100vh - 3rem); 
-          position: sticky; top: 1.5rem; display: flex; flex-direction: column; 
+          position: sticky; top: 1.5rem; align-self: start; display: flex; flex-direction: column; 
+          overflow: hidden;
         }
 
-        /* Small Icon Theme Toggle */
-        .theme-selector {
-          display: flex; gap: 8px; background: rgba(88, 166, 255, 0.08);
-          padding: 6px; border-radius: 12px; margin-bottom: 2rem; width: fit-content;
-        }
+        /* Custom Scrollbar for sidebar */
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(88, 166, 255, 0.2); border-radius: 4px; }
 
-        .theme-icon-btn {
-          width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-          border-radius: 8px; border: none; cursor: pointer; transition: 0.2s; background: transparent;
-          color: var(--text-muted);
+        .theme-toggle-single {
+          background: rgba(88, 166, 255, 0.08); border: 1px solid rgba(88, 166, 255, 0.2);
+          border-radius: 12px; padding: 10px 15px; display: flex; align-items: center; gap: 10px;
+          color: var(--text-main); font-weight: 800; cursor: pointer; transition: 0.3s; width: fit-content; margin-bottom: 2rem;
         }
-
-        .theme-icon-btn.active {
-          background: #58a6ff; color: white; box-shadow: 0 2px 8px rgba(88, 166, 255, 0.4);
-        }
+        .theme-toggle-single:hover { background: rgba(88, 166, 255, 0.15); }
 
         .user-highlight {
           margin-top: auto; padding: 1.2rem; background: rgba(88, 166, 255, 0.05);
@@ -172,9 +170,11 @@ const Dashboard = () => {
           background-size: 20px 20px;
         }
 
-        .bulb { width: 14px; height: 14px; border-radius: 50%; display: inline-block; transition: 0.5s; background: #30363d; }
-        .bulb-red.active { background: #f85149; box-shadow: 0 0 25px 8px rgba(248, 81, 73, 0.7); border: 2px solid #fff; }
-        .bulb-green.active { background: #10b981; box-shadow: 0 0 25px 8px rgba(16, 185, 129, 0.7); border: 2px solid #fff; }
+        .glow-box-green { background: rgba(16, 185, 129, 0.1); box-shadow: 0 0 35px 15px rgba(16, 185, 129, 0.4); border: 2px solid #10b981; border-radius: 50%; padding: 18px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.4s ease; }
+        .glow-box-red { background: rgba(248, 81, 73, 0.1); box-shadow: 0 0 35px 15px rgba(248, 81, 73, 0.4); border: 2px solid #f85149; border-radius: 50%; padding: 18px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.4s ease; }
+        .glow-box-inactive { background: rgba(255, 255, 255, 0.02); border: 2px solid var(--border-color); border-radius: 50%; padding: 18px; display: inline-flex; opacity: 0.5; transition: all 0.4s ease; }
+        .scan-pulse-anim { animation: scanpulse 2s infinite; }
+        @keyframes scanpulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
 
         .input-area { 
           width: 100%; background: var(--input-bg); border: 1px solid var(--border-color); 
@@ -208,48 +208,73 @@ const Dashboard = () => {
             <h1 style={{ fontSize: '1.2rem', margin: 0, fontWeight: 800 }}>JOB DETECTOR</h1>
           </div>
 
-          {/* Small Icon Theme Toggle */}
+          {/* Single Icon Theme Toggle */}
           <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '0.8rem', letterSpacing: '2px' }}>
             THEME MODE
           </div>
-          <div className="theme-selector">
-            <button 
-              className={`theme-icon-btn ${theme === 'light' ? 'active' : ''}`}
-              onClick={() => toggleTheme('light')}
-            >
-              <Sun size={16} />
-            </button>
-            <button 
-              className={`theme-icon-btn ${theme === 'dark' ? 'active' : ''}`}
-              onClick={() => toggleTheme('dark')}
-            >
-              <Moon size={16} />
-            </button>
-          </div>
+          <button 
+            className="theme-toggle-single"
+            onClick={() => toggleTheme(theme === 'dark' ? 'light' : 'dark')}
+          >
+            {theme === 'dark' ? <Moon size={18} color="#58a6ff" /> : <Sun size={18} color="#f39c12" />}
+            <span style={{ fontSize: '0.8rem', letterSpacing: '1px' }}>
+              {theme === 'dark' ? 'DARK' : 'LIGHT'}
+            </span>
+          </button>
 
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '1.5rem', letterSpacing: '2px' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', marginBottom: '1.5rem' }}>
+            <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '1rem', letterSpacing: '2px' }}>
               ACTIVE MODELS
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#58a6ff' }}></div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '2rem' }}>
+              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+                <Cpu size={16} color="#58a6ff" />
                 <span style={{ fontSize: '0.8rem', fontWeight: 700 }}>SVM Kernel</span>
               </div>
-              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }}></div>
+              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+                <Zap size={16} color="#10b981" />
                 <span style={{ fontSize: '0.8rem', fontWeight: 700 }}>Naive Bayes</span>
               </div>
-              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#f1e05a' }}></div>
+              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+                <Database size={16} color="#f1e05a" />
                 <span style={{ fontSize: '0.8rem', fontWeight: 700 }}>Logistic Regression</span>
               </div>
             </div>
+
+            <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '1rem', letterSpacing: '2px' }}>
+              SYSTEM USAGE
+            </div>
+            <div style={{ padding: '15px', background: 'rgba(88, 166, 255, 0.05)', borderRadius: '12px', border: '1px solid rgba(88, 166, 255, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <History size={16} color="#58a6ff" />
+                <span style={{ fontSize: '0.8rem', fontWeight: 800 }}>Total Scans</span>
+              </div>
+              <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#58a6ff' }}>{history.length}</span>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginTop: '12px' }}>
+              <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '10px', borderRadius: '12px', textAlign: 'center' }}>
+                <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '2px' }}>REAL</div>
+                <div style={{ fontSize: '1rem', fontWeight: 900, color: '#10b981' }}>{history.filter(h => h.result === 'GENUINE').length}</div>
+              </div>
+              <div style={{ background: 'rgba(248, 81, 73, 0.05)', border: '1px solid rgba(248, 81, 73, 0.2)', padding: '10px', borderRadius: '12px', textAlign: 'center' }}>
+                <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '2px' }}>FAKE</div>
+                <div style={{ fontSize: '1rem', fontWeight: 900, color: '#f85149' }}>{history.filter(h => h.result === 'FAKE').length}</div>
+              </div>
+              <div style={{ background: 'rgba(243, 156, 18, 0.05)', border: '1px solid rgba(243, 156, 18, 0.2)', padding: '10px', borderRadius: '12px', textAlign: 'center' }}>
+                <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '2px' }}>INVALID</div>
+                <div style={{ fontSize: '1rem', fontWeight: 900, color: '#f39c12' }}>{history.filter(h => h.result === 'INVALID').length}</div>
+              </div>
+            </div>
           </div>
 
-          <div className="user-highlight">
+          <div className="user-highlight" style={{ flexShrink: 0 }}>
+            <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '5px', letterSpacing: '2px' }}>LOGGED IN AS</div>
             <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>{user.name}</div>
-            <button onClick={() => navigate('/')} className="logout-btn"><LogOut size={16} /> Logout</button>
+            <button onClick={() => {
+              localStorage.removeItem('user_data');
+              navigate('/login');
+            }} className="logout-btn"><LogOut size={16} /> Logout</button>
           </div>
         </aside>
 
@@ -259,26 +284,29 @@ const Dashboard = () => {
             <p style={{ color: 'var(--text-muted)' }}>HYBRID MODEL</p>
           </header>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 500px', gap: '1.5rem', marginBottom: '3rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 500px', gap: '1.5rem', marginBottom: '3rem', alignItems: 'stretch' }}>
             {/* INPUT SECTION */}
-            <div className="analysis-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <span style={{ fontWeight: 800, color: '#58a6ff', fontSize: '0.8rem' }}> INPUT ADVERTISEMENT</span>
-                <Cpu size={16} color="#58a6ff" />
+            <div className="analysis-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', alignItems: 'center' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, color: '#58a6ff', fontSize: '0.8rem' }}>
+                  <FileText size={18} /> INPUT ADVERTISEMENT
+                </span>
+                <Server size={18} color="#58a6ff" />
               </div>
-              <textarea 
-                className="input-area" 
-                placeholder="Paste job description here to begin scan..." 
-                value={jobText} 
-                onChange={(e) => setJobText(e.target.value)} 
+              <textarea
+                className="input-area"
+                style={{ flex: 1 }}
+                placeholder="Paste job description here to begin scan..."
+                value={jobText}
+                onChange={(e) => setJobText(e.target.value)}
               />
               <div className="char-counter" style={{ color: 'var(--text-muted)' }}>
                 {jobText.length} characters detected
               </div>
-              <button 
-                className="logout-btn" 
-                style={{ background: '#10b981', padding: '1.2rem', marginTop: '1.5rem', fontSize: '1.1rem' }} 
-                onClick={handleAnalyze} 
+              <button
+                className="logout-btn"
+                style={{ background: '#10b981', padding: '1.2rem', marginTop: '1.5rem', fontSize: '1.1rem' }}
+                onClick={handleAnalyze}
                 disabled={isAnalyzing}
               >
                 {isAnalyzing ? "SCANNING IN PROGRESS..." : "ANALYSIS ADS"}
@@ -286,8 +314,9 @@ const Dashboard = () => {
             </div>
 
             {/* RESULTS SCANNER SECTION */}
-            <div className="analysis-card" style={{ border: '2px solid #58a6ff' }}>
+            <div className="analysis-card" style={{ border: '2px solid #58a6ff', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
               <div className="grid-bg"></div>
+              {/* Replace the content inside the Results Scanner Card with this: */}
               <AnimatePresence mode="wait">
                 {isAnalyzing ? (
                   <div className="scanner-container">
@@ -297,64 +326,75 @@ const Dashboard = () => {
                   </div>
                 ) : showResults && result ? (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', marginBottom: '20px' }}>
-                      <div style={{ textAlign: 'center' }}>
-                        <div className={`bulb bulb-green ${result.result_label === 'GENUINE' ? 'active' : ''}`} />
-                        <div style={{ fontSize: '0.6rem', fontWeight: 800, marginTop: '4px' }}>REAL</div>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '60px', marginBottom: '35px', marginTop: '15px' }}>
+                      <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+                        <div className={result.result_label === 'GENUINE' ? 'glow-box-green scan-pulse-anim' : 'glow-box-inactive'}>
+                          <CheckCircle size={38} color={result.result_label === 'GENUINE' ? '#10b981' : 'var(--text-muted)'} />
+                        </div>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 900, color: result.result_label === 'GENUINE' ? '#10b981' : 'var(--text-muted)', letterSpacing: '2px' }}>GENUINE</div>
                       </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div className={`bulb bulb-red ${result.result_label === 'FAKE' ? 'active' : ''}`} />
-                        <div style={{ fontSize: '0.6rem', fontWeight: 800, marginTop: '4px' }}>FAKE</div>
+                      
+                      <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+                        <div className={result.result_label === 'FAKE' ? 'glow-box-red scan-pulse-anim' : 'glow-box-inactive'}>
+                          <AlertTriangle size={38} color={result.result_label === 'FAKE' ? '#f85149' : 'var(--text-muted)'} />
+                        </div>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 900, color: result.result_label === 'FAKE' ? '#f85149' : 'var(--text-muted)', letterSpacing: '2px' }}>FAKE</div>
                       </div>
                     </div>
 
-                    <h1 style={{ 
-                      textAlign: 'center', 
-                      fontSize: result.result_label === 'INVALID' ? '2.5rem' : '4rem', 
-                      margin: '0', 
-                      color: result.result_label === 'INVALID' ? '#6c757d' : (result.result_label === 'FAKE' ? '#f85149' : '#10b981'),
+                    <h1 style={{
+                      textAlign: 'center',
+                      fontSize: result.result_label === 'INVALID' ? '2.5rem' : '4rem',
+                      margin: '0',
+                      color: result.result_label === 'INVALID' ? '#f39c12' : (result.result_label === 'FAKE' ? '#f85149' : '#10b981'),
                       textShadow: result.result_label === 'INVALID' ? 'none' : `0 0 20px ${result.result_label === 'FAKE' ? '#f8514955' : '#10b98155'}`
                     }}>
                       {result.result_label}
                     </h1>
 
-                    <div style={{ 
-                      textAlign: 'center', 
-                      background: 'rgba(88, 166, 255, 0.05)', 
-                      padding: '12px', 
-                      borderRadius: '12px', 
-                      margin: '15px 0',
-                      border: result.result_label === 'INVALID' ? '1px solid #f85149' : 'none'
+                    <div style={{
+                      textAlign: 'center',
+                      background: result.result_label === 'INVALID' ? 'rgba(243, 156, 18, 0.1)' : 'rgba(88, 166, 255, 0.05)',
+                      padding: '18px',
+                      borderRadius: '16px',
+                      margin: '25px 0',
+                      border: result.result_label === 'INVALID' ? '1px solid #f39c12' : '1px solid rgba(88, 166, 255, 0.2)'
                     }}>
-                      <span style={{ fontSize: '0.9rem', color: result.result_label === 'INVALID' ? '#f85149' : '#58a6ff', fontWeight: 800 }}>
-                        {result.result_label === 'INVALID' ? result.battle_data.Status : `CONFIDENCE SCORE: ${result.confidence}%`}
+                      <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '8px', letterSpacing: '2px' }}>
+                        SYSTEM ANALYSIS REPORT
+                      </div>
+                      <span style={{ fontSize: '1rem', color: result.result_label === 'INVALID' ? '#f39c12' : '#58a6ff', fontWeight: 800 }}>
+                        {result.result_label === 'INVALID'
+                          ? (result.battle_data?.Error ? `REASON: ${result.battle_data.Error.toUpperCase()}` : "REASON: INVALID INPUT") // Shows backend reason
+                          : `CONFIDENCE SCORE: ${result.confidence}%`}
                       </span>
                     </div>
 
                     {result.result_label !== 'INVALID' && (
-                      <div style={{ marginTop: '20px' }}>
-                        <div className="model-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
-                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>SVM (Kernel)</span>
-                          <div style={{ display: 'flex', width: '100%', gap: '15px' }}>
-                            <span style={{ color: '#f85149', fontWeight: 800, fontSize: '0.85rem' }}>● {result.battle_data?.["SVM (Kernel)"]}% FAKE</span>
-                            <span style={{ color: '#10b981', fontWeight: 800, fontSize: '0.85rem' }}>● {(100 - result.battle_data?.["SVM (Kernel)"]).toFixed(1)}% REAL</span>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '1.2rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 800, letterSpacing: '1px' }}>FAKE SIGNAL</span>
+                            <span style={{ fontSize: '0.9rem', color: '#f85149', fontWeight: 900 }}>{result.battle_data?.['Fake Signal']}</span>
+                          </div>
+                          <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+                            <motion.div initial={{ width: 0 }} animate={{ width: result.battle_data?.['Fake Signal'] }} transition={{ duration: 1, delay: 0.5 }} style={{ height: '100%', background: '#f85149' }} />
                           </div>
                         </div>
 
-                        <div className="model-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
-                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>Naive Bayes</span>
-                          <div style={{ display: 'flex', width: '100%', gap: '15px' }}>
-                            <span style={{ color: '#f85149', fontWeight: 800, fontSize: '0.85rem' }}>● {result.battle_data?.["Naive Bayes"]}% FAKE</span>
-                            <span style={{ color: '#10b981', fontWeight: 800, fontSize: '0.85rem' }}>● {(100 - result.battle_data?.["Naive Bayes"]).toFixed(1)}% REAL</span>
+                        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '1.2rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 800, letterSpacing: '1px' }}>GENUINE SIGNAL</span>
+                            <span style={{ fontSize: '0.9rem', color: '#10b981', fontWeight: 900 }}>{result.battle_data?.['Genuine Signal']}</span>
+                          </div>
+                          <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+                            <motion.div initial={{ width: 0 }} animate={{ width: result.battle_data?.['Genuine Signal'] }} transition={{ duration: 1, delay: 0.5 }} style={{ height: '100%', background: '#10b981' }} />
                           </div>
                         </div>
-
-                        <div className="model-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
-                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>Logistic Regression</span>
-                          <div style={{ display: 'flex', width: '100%', gap: '15px' }}>
-                            <span style={{ color: '#f85149', fontWeight: 800, fontSize: '0.85rem' }}>● {result.battle_data?.["Logistic Regression"]}% FAKE</span>
-                            <span style={{ color: '#10b981', fontWeight: 800, fontSize: '0.85rem' }}>● {(100 - result.battle_data?.["Logistic Regression"]).toFixed(1)}% REAL</span>
-                          </div>
+                        
+                        <div style={{ gridColumn: 'span 2', background: 'rgba(88, 166, 255, 0.05)', border: '1px solid rgba(88, 166, 255, 0.2)', borderRadius: '16px', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                           <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#58a6ff' }}>ALGORITHM: {result.battle_data?.Algorithm || "Ensemble Model"}</span>
+                           <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)' }}>STATUS: {result.battle_data?.Status || "VALIDATED"}</span>
                         </div>
                       </div>
                     )}
@@ -385,16 +425,11 @@ const Dashboard = () => {
                 const isInvalid = h.result === 'INVALID';
                 return (
                   <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', position: 'relative', zIndex: 2 }}>
-                    <div style={{ marginTop: '15px' }}>
-                      <div className="pulse-bulb" style={{ 
-                        width: '14px', height: '14px', borderRadius: '50%',
-                        background: isInvalid ? '#6c757d' : (isFake ? '#f85149' : '#10b981'),
-                        boxShadow: `0 0 20px 5px ${isInvalid ? 'rgba(108,117,125,0.2)' : (isFake ? 'rgba(248, 81, 73, 0.4)' : 'rgba(16, 185, 129, 0.4)')}`,
-                        border: '2px solid #fff'
-                      }} />
+                    <div style={{ marginTop: '10px', background: 'var(--bg-root)', padding: '5px', borderRadius: '50%', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {isInvalid ? <XCircle size={18} color="#6c757d" /> : (isFake ? <ShieldAlert size={18} color="#f85149" /> : <ShieldCheck size={18} color="#10b981" />)}
                     </div>
-                    <div style={{ 
-                      flex: 1, background: 'var(--bg-card)', border: `1px solid ${isFake ? 'rgba(248, 81, 73, 0.2)' : 'var(--border-color)'}`, 
+                    <div style={{
+                      flex: 1, background: 'var(--bg-card)', border: `1px solid ${isFake ? 'rgba(248, 81, 73, 0.2)' : 'var(--border-color)'}`,
                       borderRadius: '16px', padding: '1.2rem'
                     }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>

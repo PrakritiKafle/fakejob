@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Mail, Lock, LogIn, ArrowRight } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -112,12 +113,14 @@ const Login = () => {
           display: flex; flex-direction: column; justify-content: center;
         }
 
+        .input-wrapper { position: relative; display: flex; align-items: center; margin-bottom: 1.2rem; }
+        .input-icon { position: absolute; left: 16px; color: #64748b; transition: 0.3s; pointer-events: none; }
+
         .azure-input {
-          width: 100%; padding: 1.1rem;
+          width: 100%; padding: 1.1rem; padding-left: 48px;
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid #334155;
           border-radius: 12px;
-          margin-bottom: 1.2rem;
           color: #fff;
           outline: none; transition: 0.3s;
         }
@@ -127,6 +130,7 @@ const Login = () => {
           background: rgba(56, 189, 248, 0.08);
           box-shadow: 0 0 15px rgba(56, 189, 248, 0.1);
         }
+        .azure-input:focus + .input-icon { color: #38bdf8; }
 
         .login-btn {
           background: #38bdf8;
@@ -220,35 +224,43 @@ const Login = () => {
             <input type="password" style={{ display: "none" }} />
 
             <div className="label-text">Email Address</div>
-            <input
-              type="email"
-              name="userEmail"
-              autoComplete="new-email"
-              className="azure-input"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <div className="input-wrapper">
+              <input
+                type="email"
+                name="userEmail"
+                autoComplete="new-email"
+                className="azure-input"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <Mail className="input-icon" size={20} />
+            </div>
 
             <div className="label-text">Password</div>
-            <input
-              type="password"
-              name="userPassword"
-              autoComplete="new-password"
-              className="azure-input"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="input-wrapper">
+              <input
+                type="password"
+                name="userPassword"
+                autoComplete="new-password"
+                className="azure-input"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <Lock className="input-icon" size={20} />
+            </div>
 
             <motion.button
               type="submit"
               className="login-btn"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '10px' }}
               whileTap={{ scale: 0.98 }}
             >
               {isLoading ? "Signing In..." : "Sign In"}
+              {!isLoading && <ArrowRight size={18} />}
             </motion.button>
           </form>
 

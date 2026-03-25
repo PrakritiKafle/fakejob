@@ -1,11 +1,11 @@
 import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
-  // Read the key you just set in Login.jsx
-  const isAuth = localStorage.getItem("isAuthenticated");
+  // Read user_data to verify authentication
+  const userData = localStorage.getItem("user_data");
 
-  // If the key is missing or not "true", send them back to login
-  if (!isAuth || isAuth !== "true") {
+  // If user_data is missing, send them back to login
+  if (!userData) {
     return <Navigate to="/login" replace />;
   }
 

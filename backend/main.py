@@ -1,22 +1,22 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
-import pickle
 import os
 import re
 import json
+import joblib
 import nltk
-import numpy as np
+import uvicorn
+import unicodedata
 from datetime import datetime
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-import uvicorn
 
 # --- INITIALIZATION ---
-app = FastAPI(title="JobGuard Pro: Hybrid ML + Heuristic Engine")
+app = FastAPI(title="JobGuard Pro: Advanced Stacking System")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_FILE  = os.path.join(BASE_DIR, "users.json")
+DB_FILE = os.path.join(BASE_DIR, "users.json")
 MODELS_PATH = os.path.join(BASE_DIR, "model")
 
 # --- DATABASE LOGIC ---
@@ -51,78 +51,102 @@ app.add_middleware(
 def setup_nltk():
     global stop_words, lemmatizer, english_vocab
     for pkg in ['stopwords', 'wordnet', 'words']:
-        try:
-            nltk.download(pkg, quiet=True)
-        except Exception as e:
-            print(f"NLTK Download Warning: {e}")
+        nltk.download(pkg, quiet=True)
     
     stop_words = set(stopwords.words('english'))
     lemmatizer = WordNetLemmatizer()
-    # Loading English vocabulary for gibberish detection
     try:
         english_vocab = set(w.lower() for w in nltk.corpus.words.words())
     except:
-        # Fallback if words corpus isn't available
         english_vocab = set()
 
 setup_nltk()
 
-def clean_text(raw_text):
-    text = re.sub(r'[^a-zA-Z0-9]', ' ', str(raw_text))
-    text = text.lower().split()
-    text = [lemmatizer.lemmatize(word) for word in text if word not in stop_words]
-    return " ".join(text)
+def clean_text_with_masking(raw_text):
+    text = raw_text.lower()
+    # Mask long digit strings (Phone numbers/IDs) to avoid confusing TF-IDF
+    text = re.sub(r'\b\d{7,}\b', ' num_token ', text)
+    text = re.sub(r'[^a-zA-Z0-9\s]', ' ', text)
+    words = text.split()
+    cleaned = [lemmatizer.lemmatize(w) for w in words if w not in stop_words]
+    return " ".join(cleaned)
 
-# --- VALIDATION LOGIC (Gibberish Check) ---
-def is_valid_input(raw_text):
-    """Checks if the input is meaningful and long enough."""
-    words = re.findall(r'\b\w+\b', raw_text.lower())
+# --- HYBRID VALIDATION LAYER ---
+def validate_job_content(raw_text):
+   
     
-    # 1. Minimum Word Count
-    if len(words) < 10:
-        return False, "Input is too short to be a job advertisement."
+    # PHASE 0: NORMALIZATION (Fixes the stylized font issue)
+    normalized = unicodedata.normalize('NFKD', raw_text).encode('ascii', 'ignore').decode('ascii')
+    text_lower = normalized.lower()
+    # Extract words using a more robust pattern
+    words = re.findall(r'\b\w+\b', text_lower)
+    word_count = len(words)
 
-    # 2. English Dictionary Check (Gibberish Detection)
-    # Checks if words exist in the NLTK dictionary
-    meaningful_count = sum(1 for w in words if w in english_vocab or w.isdigit())
-    validity_ratio = meaningful_count / len(words) if len(words) > 0 else 0
-    
-    # Threshold: If < 35% of words are recognized, it's gibberish
-    if validity_ratio < 0.35:
-        return False, "This is gibberish. Cannot find such words in our database."
+    # 1. STRUCTURAL CHECK: Length
+    # Most valid job ads need at least 15 words to describe a role
+    if word_count < 15:
+        return False, "Input too short to be a valid job description."
 
-    return True, "Success"
-
-# --- HEURISTIC LOGIC ---
-def check_heuristics(raw_text):
-    text_lower = raw_text.lower()
-    numbers = re.findall(r'\d+(?:,\d+)*', text_lower)
-    for n in numbers:
+    # 2. FINANCIAL CHECK: Impossible Salary Detection
+    # Catches Rs 50,000,000 or 9999999999 strings
+    salary_patterns = re.findall(r'(?:salary|pay|rs|inr|npr|\$|€)\s?[:\-]?\s?([\d,]+)', text_lower)
+    for s in salary_patterns:
+        clean_s = s.replace(',', '') # Remove commas for calculation
+        if len(clean_s) > 12:
+            return False, "Unrealistic salary digits detected."
         try:
-            val = int(n.replace(',', ''))
-            if val >= 150000:
-                return 0.98
+            val = int(clean_s)
+            if val > 10000000: # 1 Crore / 10 Million limit
+                return False, "Salary exceeds realistic system limits."
         except ValueError:
             continue
-    if "ceo" in text_lower and ("no experience" in text_lower or "freshers" in text_lower):
-        return 0.99
-    return None
+
+    # 3. EXPERIENCE CHECK: Unrealistic Experience Requirement
+    # Scans for "X years", "X+ yrs" and rejects if > 30
+    exp_patterns = re.findall(r'(\d+)\s*\+?\s*(?:years?|yrs?)', text_lower)
+    for exp in exp_patterns:
+        try:
+            val = int(exp)
+            if val > 30:
+                return False, "Unrealistic experience requirement detected."
+        except ValueError:
+            continue
+
+    # 4. RELEVANCE CHECK: Job Domain Anchors
+    # We look for professional terminology
+    job_anchors = {
+        'requirements', 'qualifications', 'responsibilities', 'experience',
+        'skills', 'apply', 'hiring', 'description', 'benefits', 'role',
+        'candidate', 'opportunity', 'salary', 'location', 'full-time', 
+        'part-time', 'internship', 'cv', 'resume', 'send', 'email'
+    }
+    
+    found_anchors = [w for w in words if w in job_anchors]
+    # Check for unique anchors (must find at least 2 distinct keywords)
+    if len(set(found_anchors)) < 2:
+        return False, "Content lacks standard job advertisement keywords."
+
+    # 4. SANITY CHECK: Gibberish Detection
+    # Compares words against known English vocabulary + numbers
+    if word_count > 0:
+        meaningful_count = sum(1 for w in words if w in english_vocab or w.isdigit())
+        valid_ratio = meaningful_count / word_count
+        
+        # If less than 25% of words are recognizable English, it's likely nonsense
+        if valid_ratio < 0.25:
+            return False, "Input detected as non-English or gibberish text."
+
+    return True, "Valid"
 
 # --- MODEL LOADING ---
 models_loaded = False
-tfidf = svm_model = nb_model = lr_model = None
+tfidf_vectorizer = stacking_model = None
 
 try:
-    with open(os.path.join(MODELS_PATH, "tfidf_vectorizer.pkl"), 'rb') as f:
-        tfidf = pickle.load(f)
-    with open(os.path.join(MODELS_PATH, "svm_model.pkl"), 'rb') as f:
-        svm_model = pickle.load(f)
-    with open(os.path.join(MODELS_PATH, "naive_bayes_model.pkl"), 'rb') as f:
-        nb_model = pickle.load(f)
-    with open(os.path.join(MODELS_PATH, "logistic_regression_model.pkl"), 'rb') as f:
-        lr_model = pickle.load(f)
+    tfidf_vectorizer = joblib.load(os.path.join(MODELS_PATH, "tfidf_vectorizer.pkl"))
+    stacking_model = joblib.load(os.path.join(MODELS_PATH, "job_fraud_stacking_model.pkl"))
     models_loaded = True
-    print("✅ HYBRID SYSTEM ONLINE: ML + Gibberish Shield Active.")
+    print("✅ STACKING ENSEMBLE ONLINE")
 except Exception as e:
     print(f"❌ LOAD ERROR: {e}")
 
@@ -137,6 +161,7 @@ class UserAuth(BaseModel):
     full_name: str = ""
 
 # --- API ENDPOINTS ---
+
 @app.post("/signup")
 async def signup(user: UserAuth):
     users = get_all_users()
@@ -145,14 +170,14 @@ async def signup(user: UserAuth):
         raise HTTPException(status_code=400, detail="Email already registered")
     users[email_key] = {"full_name": user.full_name, "password": user.password, "history": []}
     save_users(users)
-    return {"message": "User created successfully", "full_name": user.full_name}
+    return {"message": "User created successfully"}
 
 @app.post("/login")
 async def login(user: UserAuth):
     users = get_all_users()
     email_key = user.email.lower().strip()
     if email_key not in users or users[email_key].get("password") != user.password:
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
     return {
         "message": "Login successful",
         "full_name": users[email_key].get("full_name", "User"),
@@ -166,78 +191,60 @@ async def analyze_job(data: JobInput):
         raise HTTPException(status_code=503, detail="AI Engine Offline")
 
     raw_text = data.description.strip()
+    email_key = data.email.lower().strip()
 
-    # --- STEP 1: GIBBERISH & VALIDITY SHIELD ---
-    is_valid, message = is_valid_input(raw_text)
+    # Step 1: Hybrid Validation
+    is_valid, message = validate_job_content(raw_text)
     if not is_valid:
-        return {
-            "final_decision": "INVALID",
+        # Construct response for invalid input
+        response_data = {
+            "final_decision": f"INVALID: {message}",
             "result_label": "INVALID",
             "confidence": 0,
-            "confidence_color": "#6c757d", # Gray
-            "battle_data": {
-                "SVM (Kernel)": 0,
-                "Naive Bayes": 0,
-                "Logistic Regression": 0,
-                "Status": message  # Returns "This is gibberish..."
-            },
-            "history": get_all_users().get(data.email.lower().strip(), {}).get("history", [])
+            "battle_data": {"Status": "FAILED", "Error": message},
         }
-    
-    # --- STEP 2: ML ANALYSIS ---
-    cleaned = clean_text(raw_text)
-    X_vec = tfidf.transform([cleaned])
-    p_svm = float(svm_model.predict_proba(X_vec)[0][1])
-    p_nb  = float(nb_model.predict_proba(X_vec)[0][1])
-    p_lr  = float(lr_model.predict_proba(X_vec)[0][1])
-    ai_prob = (p_svm + p_nb + p_lr) / 3
-
-    # --- STEP 3: HEURISTIC CHECK ---
-    h_score = check_heuristics(raw_text)
-
-    # --- STEP 4: FUSION ---
-    final_fake_prob = max(ai_prob, h_score) if h_score else ai_prob
-
-    if final_fake_prob >= 0.50:
-        result_label = "FAKE"
-        confidence = round(final_fake_prob * 100, 2)
-        conf_color = "#dc3545" 
     else:
-        result_label = "GENUINE"
-        confidence = round((1 - final_fake_prob) * 100, 2)
-        conf_color = "#198754" 
+        # Step 2: ML Prediction
+        cleaned = clean_text_with_masking(raw_text)
+        X_vec = tfidf_vectorizer.transform([cleaned])
+        prediction = stacking_model.predict(X_vec)[0]
+        probs = stacking_model.predict_proba(X_vec)[0] 
+        
+        fake_prob = round(float(probs[1]) * 100, 2)
+        genuine_prob = round(float(probs[0]) * 100, 2)
 
-    # --- STEP 5: HISTORY LOGGING ---
+        result_label = "FAKE" if prediction == 1 else "GENUINE"
+        confidence = fake_prob if prediction == 1 else genuine_prob
+
+        response_data = {
+            "final_decision": f"DETECTED {result_label}",
+            "result_label": result_label,
+            "confidence": confidence,
+            "battle_data": {
+                "Algorithm": "Stacking Ensemble",
+                "Fake Signal": f"{fake_prob}%",
+                "Genuine Signal": f"{genuine_prob}%",
+                "Status": "VALIDATED"
+            }
+        }
+
+    # Step 3: Global History Logging
     users = get_all_users()
-    email_key = data.email.lower().strip()
     history_entry = {
         "id": datetime.now().timestamp(),
         "timestamp": datetime.now().strftime("%b %d, %H:%M"),
-        "description": raw_text[:120] + "...",
-        "result": result_label,
-        "confidence": f"{confidence}%"
+        "description": raw_text[:100] + "...",
+        "result": response_data["result_label"],
+        "confidence": f"{response_data['confidence']}%" if response_data["result_label"] != "INVALID" else "N/A"
     }
 
     if email_key in users:
-        if "history" not in users[email_key]: 
-            users[email_key]["history"] = []
-        users[email_key]["history"].insert(0, history_entry)
+        users[email_key].setdefault("history", []).insert(0, history_entry)
         users[email_key]["history"] = users[email_key]["history"][:10]
         save_users(users)
 
-    return {
-        "final_decision": f"DETECTED {result_label}",
-        "result_label": result_label,
-        "confidence": confidence,
-        "confidence_color": conf_color,
-        "battle_data": {
-            "SVM (Kernel)": round(p_svm * 100, 1),
-            "Naive Bayes": round(p_nb * 100, 1),
-            "Logistic Regression": round(p_lr * 100, 1),
-            "Status": "VALIDATED"
-        },
-        "history": users.get(email_key, {}).get("history", [])
-    }
+    response_data["history"] = users.get(email_key, {}).get("history", [])
+    return response_data
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

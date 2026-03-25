@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Mail, Lock, User, ArrowRight } from 'lucide-react';
+
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -98,12 +100,14 @@ const Signup = () => {
           display: flex; flex-direction: column; justify-content: center;
         }
 
+        .input-wrapper { position: relative; display: flex; align-items: center; margin-bottom: 1.2rem; }
+        .input-icon { position: absolute; left: 16px; color: #64748b; transition: 0.3s; pointer-events: none; }
+
         .azure-input {
-          width: 100%; padding: 1.1rem;
+          width: 100%; padding: 1.1rem; padding-left: 48px;
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid #334155;
           border-radius: 12px;
-          margin-bottom: 1.2rem;
           color: #fff;
           outline: none; transition: 0.3s;
         }
@@ -112,6 +116,7 @@ const Signup = () => {
           border-color: #38bdf8;
           background: rgba(56, 189, 248, 0.08);
         }
+        .azure-input:focus + .input-icon { color: #38bdf8; }
 
         .signup-btn {
           background: #38bdf8;
@@ -207,31 +212,42 @@ const Signup = () => {
 
           <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column' }}>
             <div className="label-text">Full Name</div>
-            <input 
-              type="text" className="azure-input" placeholder="Enter your full name"
-              value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
-              required 
-            />
+            <div className="input-wrapper">
+              <input 
+                type="text" className="azure-input" placeholder="Enter your full name"
+                value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
+                required 
+              />
+              <User className="input-icon" size={20} />
+            </div>
 
             <div className="label-text">Email Address</div>
-            <input 
-              type="email" className="azure-input" placeholder="Enter your email"
-              value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})}
-              required 
-            />
+            <div className="input-wrapper">
+              <input 
+                type="email" className="azure-input" placeholder="Enter your email"
+                value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})}
+                required 
+              />
+              <Mail className="input-icon" size={20} />
+            </div>
 
             <div className="label-text">Password</div>
-            <input 
-              type="password" className="azure-input" placeholder="Enter your password"
-              value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})}
-              required 
-            />
+            <div className="input-wrapper">
+              <input 
+                type="password" className="azure-input" placeholder="Enter your password"
+                value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})}
+                required 
+              />
+              <Lock className="input-icon" size={20} />
+            </div>
 
             <motion.button 
               type="submit" disabled={loading} className="signup-btn"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '10px' }}
               whileTap={{ scale: 0.98 }}
             >
               {loading ? "Creating Account..." : "Create Account"}
+              {!loading && <ArrowRight size={18} />}
             </motion.button>
           </form>
 
